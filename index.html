@@ -611,6 +611,217 @@ h2 { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; font-size: 0
 .info-val { padding: 0.9rem 1.2rem; font-size: 0.85rem; color: var(--text); display: flex; flex-direction: column; justify-content: center; }
 .info-val small { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; letter-spacing: 0.1em; color: var(--text2); opacity: 0.6; margin-top: 0.15rem; }
 
+/* ── PROJECTS ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--border);
+  padding: 2px;
+}
+
+.proj-card {
+  background: var(--panel);
+  padding: 1.6rem;
+  border-top: 2px solid transparent;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.proj-card:hover {
+  border-top-color: var(--orange);
+  background: var(--panel2);
+}
+
+.proj-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.proj-name {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--white);
+  line-height: 1.2;
+}
+
+.proj-period {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--orange);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 0.1rem;
+}
+
+.proj-client {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--muted2, #607080);
+  text-transform: uppercase;
+}
+
+.proj-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.proj-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  padding: 0.18rem 0.5rem;
+  background: var(--inset);
+  border: 1px solid var(--orange);
+  color: var(--orange2);
+  transition: all 0.15s;
+  cursor: default;
+}
+
+.proj-tag:hover { background: rgba(255,140,0,0.1); }
+
+.proj-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.proj-list li {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text2);
+  padding-left: 1.1rem;
+  position: relative;
+  font-weight: 300;
+  transition: color 0.15s;
+}
+
+.proj-list li:hover { color: var(--text); }
+
+.proj-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0; top: 0.1rem;
+  color: var(--orange);
+  font-size: 0.6rem;
+}
+
+/* ── PROJECT TABS ── */
+.proj-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 340px; }
+
+.proj-tabs { border-right: 2px solid var(--border); background: var(--inset); }
+
+.proj-group-label {
+  padding: 0.6rem 1.2rem 0.3rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.2em;
+  color: var(--orange);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.proj-tab {
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.proj-tab:hover { background: var(--panel); }
+.proj-tab.active { background: var(--panel2); border-left-color: var(--orange); }
+
+.proj-tab-ind {
+  position: absolute;
+  right: 0.8rem; top: 50%;
+  transform: translateY(-50%);
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 6px var(--orange);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.proj-tab.active .proj-tab-ind { opacity: 1; }
+
+.proj-tab-name {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 0.2rem;
+  line-height: 1.25;
+  transition: color 0.15s;
+}
+
+.proj-tab.active .proj-tab-name { color: var(--orange); }
+
+.proj-tab-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--text2);
+  opacity: 0.6;
+}
+
+.proj-content { padding: 2rem 2.5rem; background: var(--bg); }
+.proj-pane { display: none; }
+.proj-pane.active { display: block; }
+
+.proj-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.proj-detail-title {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--white);
+}
+
+.proj-detail-period {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: var(--orange);
+  padding-top: 0.3rem;
+  white-space: nowrap;
+}
+
+.proj-detail-client {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--text2);
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
 /* ── FOOTER ── */
 footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orange); padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -3px 10px rgba(0,0,0,0.4); }
 .ft { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; color: var(--text2); text-transform: uppercase; }
@@ -623,7 +834,9 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
   .exp-tabs { border-right: none; border-bottom: 2px solid var(--border); display: flex; flex-wrap: wrap; }
   .exp-tab { flex: 1; min-width: 130px; border-left: none; border-bottom: 2px solid transparent; }
   .exp-tab.active { border-bottom-color: var(--orange); border-left: none; }
-  .skills-grid, .edu-grid { grid-template-columns: 1fr; }
+  .skills-grid, .edu-grid, .projects-grid { grid-template-columns: 1fr; }
+  .proj-layout { grid-template-columns: 1fr; }
+  .proj-tabs { border-right: none; border-bottom: 2px solid var(--border); }
   .contact-grid { grid-template-columns: 1fr; }
   .topbar-nav { display: none; }
   .profile-pane { padding: 2.5rem 1.5rem; }
@@ -642,6 +855,7 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
   <ul class="topbar-nav">
     <li><a href="#exp">Experience</a></li>
     <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
     <li><a href="#edu">Education</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -915,10 +1129,172 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
     </div>
   </div>
 
-  <!-- EDUCATION -->
-  <div class="section" id="edu">
+  <!-- PROJECTS -->
+  <div class="section" id="projects">
     <div class="section-header">
       <span class="sec-id">03 //</span>
+      <h2>Project Showcase</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="proj-layout">
+      <div class="proj-tabs">
+        <div class="proj-group-label">PRIMARY PROJECTS</div>
+        <div class="proj-tab active" onclick="showProj(0)">
+          <div class="proj-tab-ind"></div>
+          <div class="proj-tab-name">Automatic Spool Storage System</div>
+          <div class="proj-tab-meta">Dec 2025 — May 2026</div>
+        </div>
+        <div class="proj-tab" onclick="showProj(1)">
+          <div class="proj-tab-ind"></div>
+          <div class="proj-tab-name">Robotic De-palletization &amp; Truck Loading</div>
+          <div class="proj-tab-meta">Jun 2021 — Feb 2022</div>
+        </div>
+        <div class="proj-tab" onclick="showProj(2)">
+          <div class="proj-tab-ind"></div>
+          <div class="proj-tab-name">Robotic Case Erector Packaging</div>
+          <div class="proj-tab-meta">Jul 2020 — Jan 2021</div>
+        </div>
+        <div class="proj-tab" onclick="showProj(3)">
+          <div class="proj-tab-ind"></div>
+          <div class="proj-tab-name">Robotic Palletization &amp; Conveyor Line</div>
+          <div class="proj-tab-meta">Jan 2019 — Oct 2019</div>
+        </div>
+        <div class="proj-group-label">STANDARDISATION</div>
+        <div class="proj-tab" onclick="showProj(4)">
+          <div class="proj-tab-ind"></div>
+          <div class="proj-tab-name">Product Block Standardization</div>
+          <div class="proj-tab-meta">Ongoing · Zimmer GmbH</div>
+        </div>
+        <div class="proj-tab" onclick="showProj(5)">
+          <div class="proj-tab-ind"></div>
+          <div class="proj-tab-name">Decapper System</div>
+          <div class="proj-tab-meta">May 2023 — Dec 2023</div>
+        </div>
+        <div class="proj-tab" onclick="showProj(6)">
+          <div class="proj-tab-ind"></div>
+          <div class="proj-tab-name">XYZ-C Gantry System</div>
+          <div class="proj-tab-meta">Zimmer Automation</div>
+        </div>
+      </div>
+      <div class="proj-content">
+        <div class="proj-pane active" id="pp0">
+          <div class="proj-detail-header">
+            <div class="proj-detail-title">Automatic Spool Storage System</div>
+            <div class="proj-detail-period">Dec 2025 — May 2026</div>
+          </div>
+          <div class="proj-detail-client">Zimmer Automation &nbsp;·&nbsp; India</div>
+          <div class="proj-tags">
+            <span class="proj-tag">Omron NX/NJ</span>
+            <span class="proj-tag">Sysmac Studio</span>
+            <span class="proj-tag">KUKA Robot</span>
+            <span class="proj-tag">EtherNet/IP</span>
+            <span class="proj-tag">EtherCAT</span>
+            <span class="proj-tag">MS SQL Server</span>
+            <span class="proj-tag">WMS</span>
+            <span class="proj-tag">Omron QR Scanner</span>
+          </div>
+          <ul class="proj-list">
+            <li>Developed full PLC control program using Omron Sysmac Studio (NX/NJ Series) for inbound, storage, and outbound operations of an automated spool warehouse</li>
+            <li>Established EtherNet/IP communication between the Omron PLC and KUKA industrial robot for coordinated pick-and-place operations</li>
+            <li>Integrated Omron QR code scanner for spool identification at inbound; scan data used by WMS to assign storage locations maintaining FIFO logic</li>
+            <li>Developed a Warehouse Management System (WMS) using AI-assisted programming — manages storage rack allocation, FIFO-based retrieval, and customer shopping list fulfillment</li>
+            <li>WMS communicates with MS SQL local database for real-time tracking of all spool movements, storage locations, and retrieval history</li>
+            <li>System flow: inbound spool arrival → robot picks to temporary storage → QR scan → WMS allocates rack location → on customer request, WMS identifies oldest stock → robot retrieves and places in outbound trolley</li>
+            <li>Led end-to-end commissioning, system integration, and functional testing of the complete automated storage solution</li>
+          </ul>
+        </div>
+        <div class="proj-pane" id="pp1">
+          <div class="proj-detail-header">
+            <div class="proj-detail-title">Robotic De-palletization &amp; Truck Loading</div>
+            <div class="proj-detail-period">Jun 2021 — Feb 2022</div>
+          </div>
+          <div class="proj-detail-client">Alligator Automations &nbsp;·&nbsp; India</div>
+          <div class="proj-tags"><span class="proj-tag">ABB Robot</span><span class="proj-tag">EtherNet/IP</span><span class="proj-tag">EtherCAT</span><span class="proj-tag">IO-Link</span><span class="proj-tag">SICK Sensors</span></div>
+          <ul class="proj-list">
+            <li>Prepared I/O list and developed PLC programs for pallet conveyor, stacker, and truck loading operations</li>
+            <li>Programmed ABB robot for stacking and de-stacking tasks with EtherNet/IP communication</li>
+            <li>Integrated SICK sensors via IO-Link; configured EtherCAT-based PLC for high-speed control</li>
+            <li>Performed complete system validation prior to dispatch to ensure functional reliability</li>
+          </ul>
+        </div>
+        <div class="proj-pane" id="pp2">
+          <div class="proj-detail-header">
+            <div class="proj-detail-title">Robotic Case Erector Packaging</div>
+            <div class="proj-detail-period">Jul 2020 — Jan 2021</div>
+          </div>
+          <div class="proj-detail-client">Alligator Automations &nbsp;·&nbsp; India</div>
+          <div class="proj-tags"><span class="proj-tag">Beckhoff PLC</span><span class="proj-tag">TwinCAT HMI</span><span class="proj-tag">Cognex Vision</span><span class="proj-tag">Festo Servo</span><span class="proj-tag">Structured Text</span></div>
+          <ul class="proj-list">
+            <li>Developed Beckhoff PLC logic using Structured Text and Ladder; designed HMI with TwinCAT</li>
+            <li>Integrated Beckhoff and Festo servo drives; configured SEW EC motors and drive systems</li>
+            <li>Implemented product tracking via Structured Text; integrated Cognex barcode and vision systems</li>
+            <li>Configured Domino printer with ZEBRA controller for automated labeling</li>
+            <li>Delivered technical training for customer operators and maintenance staff</li>
+          </ul>
+        </div>
+        <div class="proj-pane" id="pp3">
+          <div class="proj-detail-header">
+            <div class="proj-detail-title">Robotic Palletization &amp; Conveyor Line</div>
+            <div class="proj-detail-period">Jan 2019 — Oct 2019</div>
+          </div>
+          <div class="proj-detail-client">Alligator Automations &nbsp;·&nbsp; India</div>
+          <div class="proj-tags"><span class="proj-tag">Beckhoff PLC</span><span class="proj-tag">ABB Robot</span><span class="proj-tag">MySQL</span><span class="proj-tag">MS SQL</span><span class="proj-tag">SEW Drives</span></div>
+          <ul class="proj-list">
+            <li>Developed control programs in Beckhoff PLC (Structured Text &amp; Ladder) and designed custom HMI</li>
+            <li>Programmed ABB robot for palletizing; integrated SEW EC motors for conveyor and shuttle systems</li>
+            <li>Implemented MySQL and MS SQL database logging for real-time production data tracking</li>
+            <li>Conducted I/O testing, wiring validation, and integrated distance sensors for shuttle positioning</li>
+          </ul>
+        </div>
+        <div class="proj-pane" id="pp4">
+          <div class="proj-detail-header">
+            <div class="proj-detail-title">Product Block Standardization</div>
+            <div class="proj-detail-period">Ongoing</div>
+          </div>
+          <div class="proj-detail-client">Zimmer GmbH &nbsp;·&nbsp; Germany</div>
+          <div class="proj-tags"><span class="proj-tag">TwinCAT 3</span><span class="proj-tag">IEC 61131-3</span><span class="proj-tag">Structured Text</span></div>
+          <ul class="proj-list">
+            <li>Developed modular PLC function blocks for Zimmer GmbH standard products</li>
+            <li>Standardized logic across platforms to improve code reusability and quality</li>
+            <li>Reduced project development time through reusable and scalable code structures</li>
+            <li>Streamlined debugging and documentation using consistent naming and versioning</li>
+          </ul>
+        </div>
+        <div class="proj-pane" id="pp5">
+          <div class="proj-detail-header">
+            <div class="proj-detail-title">Decapper System</div>
+            <div class="proj-detail-period">May 2023 — Dec 2023</div>
+          </div>
+          <div class="proj-detail-client">Zimmer Systems &nbsp;·&nbsp; Germany</div>
+          <div class="proj-tags"><span class="proj-tag">TwinCAT 3</span><span class="proj-tag">CANopen</span><span class="proj-tag">EtherCAT</span><span class="proj-tag">IO-Link</span><span class="proj-tag">TCP/IP</span><span class="proj-tag">JSON</span></div>
+          <ul class="proj-list">
+            <li>Developed control architecture and motion programs for multi-axis systems</li>
+            <li>Implemented JSON-based data exchange over TCP/IP; configured CANopen for axis communication</li>
+            <li>Integrated EtherCAT and IO-Link for real-time device networking</li>
+            <li>Led wiring setup and conducted system validation for reliable field performance</li>
+          </ul>
+        </div>
+        <div class="proj-pane" id="pp6">
+          <div class="proj-detail-header">
+            <div class="proj-detail-title">XYZ-C Gantry System</div>
+            <div class="proj-detail-period">Zimmer Automation</div>
+          </div>
+          <div class="proj-detail-client">Zimmer Automation &nbsp;·&nbsp; Pune, India</div>
+          <div class="proj-tags"><span class="proj-tag">Beckhoff PLC</span><span class="proj-tag">SoftMotion</span><span class="proj-tag">G-Code</span><span class="proj-tag">Multi-axis Servo</span><span class="proj-tag">EtherCAT</span></div>
+          <ul class="proj-list">
+            <li>Synchronized multiple servo motors integrated with Beckhoff PLC for G-Code based motion</li>
+            <li>Implemented SoftMotion function blocks for precise multi-axis coordinated movement</li>
+            <li>Developed teach pendant interface and NCI interpolator execution with M-code handling</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- EDUCATION -->
+  <div class="section" id="edu">
+    <div class="section-header">
+      <span class="sec-id">04 //</span>
       <h2>Education</h2>
       <div class="sec-line"></div>
     </div>
@@ -941,7 +1317,7 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
   <!-- CERTIFICATIONS -->
   <div class="section">
     <div class="section-header">
-      <span class="sec-id">04 //</span>
+      <span class="sec-id">05 //</span>
       <h2>Certifications</h2>
       <div class="sec-line"></div>
     </div>
@@ -966,7 +1342,7 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
   <!-- CONTACT -->
   <div class="section" id="contact">
     <div class="section-header">
-      <span class="sec-id">05 //</span>
+      <span class="sec-id">06 //</span>
       <h2>Contact</h2>
       <div class="sec-line"></div>
     </div>
@@ -1019,6 +1395,11 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
 function showExp(i) {
   document.querySelectorAll('.exp-tab').forEach((el,j) => el.classList.toggle('active', i===j));
   document.querySelectorAll('.exp-pane').forEach((el,j) => el.classList.toggle('active', i===j));
+}
+
+function showProj(i) {
+  document.querySelectorAll('.proj-tab').forEach((el,j) => el.classList.toggle('active', i===j));
+  document.querySelectorAll('.proj-pane').forEach((el,j) => el.classList.toggle('active', i===j));
 }
 
 const obs = new IntersectionObserver(entries => {
