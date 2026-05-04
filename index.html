@@ -192,38 +192,6 @@ body::before {
   box-shadow: 0 0 4px var(--orange);
 }
 
-.profile-photo-wrap {
-  margin-bottom: 1.2rem;
-  position: relative;
-  width: 110px;
-  height: 110px;
-}
-
-.profile-photo {
-  width: 110px;
-  height: 110px;
-  object-fit: cover;
-  object-position: center top;
-  border: 2px solid var(--orange);
-  box-shadow: 0 0 0 4px var(--panel), 0 0 0 5px var(--border), 0 0 16px rgba(255,140,0,0.2);
-  display: block;
-}
-
-.profile-photo-placeholder {
-  width: 110px;
-  height: 110px;
-  background: var(--panel2);
-  border: 2px solid var(--orange);
-  box-shadow: 0 0 0 4px var(--panel), 0 0 0 5px var(--border);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Roboto Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 1.8rem;
-  color: var(--orange);
-  letter-spacing: 0.1em;
-}
 
 
 .profile-eyebrow {
@@ -233,8 +201,8 @@ body::before {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--orange);
-  margin-bottom: 1rem;
-  margin-top: 1.5rem;
+  margin-bottom: 0;
+  margin-top: 0;
 }
 
 h1 {
@@ -397,7 +365,7 @@ h1 .last { color: var(--orange); }
 /* ── PROFILE TOP — photo left, text right ── */
 .profile-top {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 1.8rem;
   margin-top: 1.5rem;
   margin-bottom: 0.2rem;
@@ -407,19 +375,19 @@ h1 .last { color: var(--orange); }
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  justify-content: space-between;
 }
 
-/* ── PROFILE PHOTO ── */
 .profile-photo-wrap {
   position: relative;
   width: 130px;
-  height: 160px;
   flex-shrink: 0;
+  align-self: stretch;
 }
 
 .profile-photo {
-  width: 130px;
-  height: 160px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center top;
   display: block;
@@ -430,8 +398,8 @@ h1 .last { color: var(--orange); }
 
 .profile-photo-placeholder {
   display: none;
-  width: 130px;
-  height: 160px;
+  width: 100%;
+  height: 100%;
   background: var(--panel2);
   border: 1px solid var(--border2);
   align-items: center;
