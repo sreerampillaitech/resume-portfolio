@@ -846,6 +846,8 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
 </head>
 <body>
 
+<canvas id="pcb-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.7;"></canvas>
+
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-left">
@@ -1392,6 +1394,155 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
 </footer>
 
 <script>
+// ── CIRCUIT BOARD ANIMATION ──
+(function() {
+  const canvas = document.getElementById('pcb-canvas');
+  const ctx = canvas.getContext('2d');
+  const ORANGE = 'rgba(255,140,0,';
+  const DIM    = 'rgba(255,140,0,0.04)';
+
+  let W, H, nodes, traces, pulses;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    init();
+  }
+
+  function randInt(a, b) { return Math.floor(Math.random() * (b - a) + a); }
+
+  function init() {
+    // Generate grid-snapped nodes
+    const cols = Math.floor(W / 80);
+    const rows = Math.floor(H / 80);
+    nodes = [];
+    for (let r = 0; r <= rows; r++) {
+      for (let c = 0; c <= cols; c++) {
+        if (Math.random() < 0.35) {
+          nodes.push({
+            x: c * 80 + randInt(-12, 12),
+            y: r * 80 + randInt(-12, 12),
+            r: Math.random() < 0.15 ? 3.5 : 1.8,
+            glow: Math.random() < 0.15,
+          });
+        }
+      }
+    }
+
+    // Build traces — L-shaped PCB style (horizontal then vertical)
+    traces = [];
+    const used = new Set();
+    nodes.forEach((a, i) => {
+      const candidates = nodes
+        .map((b, j) => ({ j, dist: Math.hypot(b.x - a.x, b.y - a.y) }))
+        .filter(({ j, dist }) => j !== i && !used.has(`${i}-${j}`) && dist > 60 && dist < 220)
+        .sort((x, y) => x.dist - y.dist)
+        .slice(0, 2);
+
+      candidates.forEach(({ j }) => {
+        used.add(`${i}-${j}`);
+        used.add(`${j}-${i}`);
+        const b = nodes[j];
+        // L-shaped: go horizontal first, then vertical (PCB style)
+        const corner = { x: b.x, y: a.y };
+        traces.push({ a, corner, b, opacity: 0.08 + Math.random() * 0.1 });
+      });
+    });
+
+    // Pulses travelling along traces
+    pulses = [];
+    traces.forEach(t => {
+      if (Math.random() < 0.25) {
+        pulses.push({
+          trace: t,
+          progress: Math.random(),
+          speed: 0.0015 + Math.random() * 0.002,
+          size: 2.5 + Math.random() * 2,
+          opacity: 0.6 + Math.random() * 0.4,
+        });
+      }
+    });
+  }
+
+  function getPulsePos(trace, progress) {
+    // L-shape has two segments: A→corner, corner→B
+    const { a, corner, b } = trace;
+    const seg1 = Math.hypot(corner.x - a.x, corner.y - a.y);
+    const seg2 = Math.hypot(b.x - corner.x, b.y - corner.y);
+    const total = seg1 + seg2;
+    const dist = progress * total;
+    if (dist <= seg1) {
+      const t = dist / seg1;
+      return { x: a.x + (corner.x - a.x) * t, y: a.y + (corner.y - a.y) * t };
+    } else {
+      const t = (dist - seg1) / seg2;
+      return { x: corner.x + (b.x - corner.x) * t, y: corner.y + (b.y - corner.y) * t };
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw traces
+    traces.forEach(({ a, corner, b, opacity }) => {
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(corner.x, corner.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = ORANGE + opacity + ')';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Draw nodes
+    nodes.forEach(node => {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+      ctx.fillStyle = ORANGE + (node.glow ? '0.5' : '0.2') + ')';
+      ctx.fill();
+
+      if (node.glow) {
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.r + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = ORANGE + '0.12)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    });
+
+    // Draw and move pulses
+    pulses.forEach(p => {
+      p.progress += p.speed;
+      if (p.progress > 1) p.progress = 0;
+
+      const pos = getPulsePos(p.trace, p.progress);
+
+      // Glowing dot
+      const grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, p.size * 3);
+      grad.addColorStop(0, ORANGE + p.opacity + ')');
+      grad.addColorStop(0.4, ORANGE + (p.opacity * 0.4) + ')');
+      grad.addColorStop(1, ORANGE + '0)');
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, p.size * 3, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Bright core
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, p.size * 0.6, 0, Math.PI * 2);
+      ctx.fillStyle = ORANGE + '0.9)';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
 function showExp(i) {
   document.querySelectorAll('.exp-tab').forEach((el,j) => el.classList.toggle('active', i===j));
   document.querySelectorAll('.exp-pane').forEach((el,j) => el.classList.toggle('active', i===j));
@@ -1407,6 +1558,239 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.06 });
 
 document.querySelectorAll('.section').forEach(el => obs.observe(el));
+
+// ── PCB CIRCUIT BOARD TRACES ANIMATION ──
+(function() {
+  const canvas = document.getElementById('pcb-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); init(); });
+
+  // Colours
+  const C_TRACE   = '255, 140, 0';   // orange traces
+  const C_NODE    = '255, 160, 40';  // node dots
+  const C_PULSE   = '255, 200, 80';  // travelling signal
+
+  // Grid snapping for PCB look
+  const GRID = 38;
+
+  // Snap a value to nearest grid point
+  function snap(v) { return Math.round(v / GRID) * GRID; }
+
+  // ── NODE ─────────────────────────────────────────────────────────────────
+  class Node {
+    constructor() { this.reset(true); }
+
+    reset(initial) {
+      this.gx = Math.floor(Math.random() * Math.ceil(W / GRID));
+      this.gy = Math.floor(Math.random() * Math.ceil(H / GRID));
+      this.x  = this.gx * GRID;
+      this.y  = this.gy * GRID;
+      this.r  = Math.random() * 3 + 3;        // node radius 3–6px
+      this.alpha = initial ? Math.random() * 0.7 + 0.25 : 0;
+      this.fadeIn  = !initial;
+      this.fadeOut = false;
+      this.life    = Math.random() * 400 + 200;
+      this.age     = 0;
+    }
+
+    update() {
+      this.age++;
+      if (this.fadeIn)  { this.alpha = Math.min(0.9, this.alpha + 0.015); if (this.alpha >= 0.85) this.fadeIn = false; }
+      if (this.age > this.life) { this.fadeOut = true; }
+      if (this.fadeOut) { this.alpha -= 0.012; }
+    }
+
+    draw() {
+      if (this.alpha <= 0) return;
+      // Outer ring
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${C_NODE}, ${this.alpha * 0.35})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      // Filled dot
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${C_NODE}, ${this.alpha})`;
+      ctx.fill();
+      // Inner bright core
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r * 0.45, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 220, 120, ${this.alpha})`;
+      ctx.fill();
+    }
+
+    get dead() { return this.fadeOut && this.alpha <= 0; }
+  }
+
+  // ── TRACE ─────────────────────────────────────────────────────────────────
+  class Trace {
+    constructor(x1, y1, x2, y2) {
+      // Route on grid — one horizontal then one vertical segment (L-shape)
+      this.x1 = x1; this.y1 = y1;
+      this.x2 = x2; this.y2 = y2;
+      // Corner point
+      this.cx = x2; this.cy = y1;
+      this.alpha = 0;
+      this.fadeIn  = true;
+      this.fadeOut = false;
+      this.life = Math.random() * 500 + 300;
+      this.age  = 0;
+      this.width = Math.random() > 0.6 ? 2 : 1;
+    }
+
+    update() {
+      this.age++;
+      if (this.fadeIn)  { this.alpha = Math.min(0.75, this.alpha + 0.01); if (this.alpha >= 0.72) this.fadeIn = false; }
+      if (this.age > this.life) this.fadeOut = true;
+      if (this.fadeOut) this.alpha -= 0.008;
+    }
+
+    draw() {
+      if (this.alpha <= 0) return;
+      ctx.strokeStyle = `rgba(${C_TRACE}, ${this.alpha})`;
+      ctx.lineWidth   = this.width;
+      ctx.lineCap     = 'square';
+      ctx.beginPath();
+      ctx.moveTo(this.x1, this.y1);
+      ctx.lineTo(this.cx, this.cy);   // horizontal leg
+      ctx.lineTo(this.x2, this.y2);   // vertical leg
+      ctx.stroke();
+    }
+
+    get dead() { return this.fadeOut && this.alpha <= 0; }
+  }
+
+  // ── SIGNAL PULSE ──────────────────────────────────────────────────────────
+  class Pulse {
+    constructor(trace) {
+      this.trace = trace;
+      this.t     = 0;          // 0 → 1 along trace path
+      this.speed = 0.004 + Math.random() * 0.004;
+      this.alpha = 0.9;
+    }
+
+    update() { this.t += this.speed; }
+
+    draw() {
+      if (this.t > 1) return;
+      const t = this.trace;
+      // Total path length
+      const leg1 = Math.abs(t.cx - t.x1) + Math.abs(t.cy - t.y1);
+      const leg2 = Math.abs(t.x2 - t.cx) + Math.abs(t.y2 - t.cy);
+      const total = leg1 + leg2;
+      const dist  = this.t * total;
+
+      let px, py;
+      if (dist <= leg1) {
+        const f = dist / Math.max(leg1, 0.001);
+        px = t.x1 + (t.cx - t.x1) * f;
+        py = t.y1 + (t.cy - t.y1) * f;
+      } else {
+        const f = (dist - leg1) / Math.max(leg2, 0.001);
+        px = t.cx + (t.x2 - t.cx) * f;
+        py = t.cy + (t.y2 - t.cy) * f;
+      }
+
+      // Glowing dot
+      const grd = ctx.createRadialGradient(px, py, 0, px, py, 8);
+      grd.addColorStop(0,   `rgba(255, 220, 120, ${this.alpha})`);
+      grd.addColorStop(0.4, `rgba(${C_PULSE}, ${this.alpha * 0.6})`);
+      grd.addColorStop(1,   `rgba(${C_PULSE}, 0)`);
+      ctx.beginPath();
+      ctx.arc(px, py, 8, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    }
+
+    get dead() { return this.t > 1; }
+  }
+
+  // ── STATE ─────────────────────────────────────────────────────────────────
+  let nodes  = [];
+  let traces = [];
+  let pulses = [];
+
+  function init() {
+    nodes  = [];
+    traces = [];
+    pulses = [];
+    const count = Math.floor((W * H) / 22000);
+    for (let i = 0; i < Math.min(count, 30); i++) nodes.push(new Node());
+    // Generate initial traces between nearby nodes
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[j].x - nodes[i].x;
+        const dy = nodes[j].y - nodes[i].y;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        if (d < GRID * 8 && Math.random() > 0.4) {
+          traces.push(new Trace(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y));
+        }
+      }
+    }
+  }
+
+  let frame = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    frame++;
+
+    // Occasionally add new nodes
+    if (frame % 120 === 0 && nodes.length < 35) {
+      const n = new Node();
+      n.reset(false);
+      nodes.push(n);
+    }
+
+    // Occasionally spawn a trace between two live nodes
+    if (frame % 80 === 0 && nodes.length > 1) {
+      const a = nodes[Math.floor(Math.random() * nodes.length)];
+      const b = nodes[Math.floor(Math.random() * nodes.length)];
+      if (a !== b) {
+        const dx = b.x - a.x, dy = b.y - a.y;
+        if (Math.sqrt(dx*dx+dy*dy) < GRID * 10) {
+          const tr = new Trace(a.x, a.y, b.x, b.y);
+          traces.push(tr);
+          // Spawn a pulse on this trace
+          if (Math.random() > 0.3) pulses.push(new Pulse(tr));
+        }
+      }
+    }
+
+    // Occasionally add a pulse on an existing trace
+    if (frame % 60 === 0 && traces.length > 0) {
+      const tr = traces[Math.floor(Math.random() * traces.length)];
+      if (!tr.dead) pulses.push(new Pulse(tr));
+    }
+
+    // Draw traces
+    traces.forEach(t => { t.update(); t.draw(); });
+    traces = traces.filter(t => !t.dead);
+
+    // Draw nodes
+    nodes.forEach(n => { n.update(); n.draw(); });
+    nodes = nodes.filter(n => !n.dead);
+
+    // Draw pulses
+    pulses.forEach(p => { p.update(); p.draw(); });
+    pulses = pulses.filter(p => !p.dead);
+
+    requestAnimationFrame(draw);
+  }
+
+  init();
+  draw();
+})();
 </script>
 </body>
 </html>
