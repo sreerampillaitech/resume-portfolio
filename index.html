@@ -514,9 +514,9 @@ h2 { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; font-size: 0
 
 .exp-tab.active .exp-tab-ind { opacity: 1; }
 
-.exp-content { padding: 2rem 2.5rem; background: var(--bg); }
+.exp-content { padding: 2rem 2.5rem; background: var(--bg); overflow: hidden; }
 
-.exp-pane { display: none; }
+.exp-pane { display: none; will-change: opacity, transform; }
 .exp-pane.active { display: block; }
 
 .exp-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.4rem; gap: 1rem; flex-wrap: wrap; }
@@ -782,8 +782,8 @@ h2 { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; font-size: 0
   opacity: 0.6;
 }
 
-.proj-content { padding: 2rem 2.5rem; background: var(--bg); }
-.proj-pane { display: none; }
+.proj-content { padding: 2rem 2.5rem; background: var(--bg); overflow: hidden; }
+.proj-pane { display: none; will-change: opacity, transform; }
 .proj-pane.active { display: block; }
 
 .proj-detail-header {
@@ -893,7 +893,7 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
         <div class="hmi-rule-line"></div>
       </div>
       <div class="profile-role">Industrial Automation &nbsp;·&nbsp; Robotics &nbsp;·&nbsp; Motion Control</div>
-      <p class="profile-desc">7+ years engineering control systems for manufacturing, palletizing, and warehouse automation. From PLC Structured Text to robot path teaching — bridging hardware and intelligent software across 4 platforms and 5+ robot brands.</p>
+      <p class="profile-desc">7+ years engineering control systems for manufacturing, palletizing, and warehouse automation. From PLC ladder logic to robot path teaching — bridging hardware and intelligent software across 4 platforms and 5+ robot brands.</p>
       <div class="btn-row">
         <a href="#contact" class="hmi-btn primary">▶ &nbsp;Get in Touch</a>
         <a href="#exp" class="hmi-btn secondary">View Experience</a>
@@ -1543,15 +1543,125 @@ footer { z-index: 1; background: var(--inset); border-top: 2px solid var(--orang
   draw();
 })();
 
+// ── EXPERIENCE TAB SWITCH WITH ANIMATION ──
 function showExp(i) {
-  document.querySelectorAll('.exp-tab').forEach((el,j) => el.classList.toggle('active', i===j));
-  document.querySelectorAll('.exp-pane').forEach((el,j) => el.classList.toggle('active', i===j));
+  const tabs  = document.querySelectorAll('.exp-tab');
+  const panes = document.querySelectorAll('.exp-pane');
+
+  // Find current active pane
+  const current = document.querySelector('.exp-pane.active');
+
+  if (current) {
+    // Slide out current pane
+    current.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+    current.style.opacity    = '0';
+    current.style.transform  = 'translateX(-18px)';
+
+    setTimeout(() => {
+      // Deactivate all
+      tabs.forEach((el, j)  => el.classList.toggle('active', i === j));
+      panes.forEach((el, j) => {
+        el.classList.remove('active');
+        el.style.opacity   = '';
+        el.style.transform = '';
+        el.style.transition = '';
+      });
+
+      // Activate new pane with slide-in
+      const next = panes[i];
+      next.style.opacity   = '0';
+      next.style.transform = 'translateX(18px)';
+      next.style.transition = 'none';
+      next.classList.add('active');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          next.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+          next.style.opacity    = '1';
+          next.style.transform  = 'translateX(0)';
+        });
+      });
+    }, 200);
+  } else {
+    tabs.forEach((el, j)  => el.classList.toggle('active', i === j));
+    panes.forEach((el, j) => el.classList.toggle('active', i === j));
+  }
 }
 
-function showProj(i) {
-  document.querySelectorAll('.proj-tab').forEach((el,j) => el.classList.toggle('active', i===j));
-  document.querySelectorAll('.proj-pane').forEach((el,j) => el.classList.toggle('active', i===j));
+// ── PROJECT TAB SWITCH WITH ANIMATION + AUTO-ROTATE ──
+let projAutoTimer = null;
+let projCurrent   = 0;
+const PROJ_TOTAL  = 7;      // total number of project tabs
+const PROJ_INTERVAL = 6000; // 6 seconds per project — enough to skim the bullets
+
+function showProj(i, fromAuto) {
+  // Reset auto-rotate timer if user clicked manually
+  if (!fromAuto) {
+    clearInterval(projAutoTimer);
+    startProjAutoRotate();
+  }
+
+  const tabs  = document.querySelectorAll('.proj-tab');
+  const panes = document.querySelectorAll('.proj-pane');
+  const current = document.querySelector('.proj-pane.active');
+
+  projCurrent = i;
+
+  if (current) {
+    current.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+    current.style.opacity    = '0';
+    current.style.transform  = 'translateY(12px)';
+
+    setTimeout(() => {
+      tabs.forEach((el, j)  => el.classList.toggle('active', i === j));
+      panes.forEach((el, j) => {
+        el.classList.remove('active');
+        el.style.opacity   = '';
+        el.style.transform = '';
+        el.style.transition = '';
+      });
+
+      const next = panes[i];
+      if (!next) return;
+      next.style.opacity    = '0';
+      next.style.transform  = 'translateY(-12px)';
+      next.style.transition = 'none';
+      next.classList.add('active');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          next.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+          next.style.opacity    = '1';
+          next.style.transform  = 'translateY(0)';
+        });
+      });
+    }, 200);
+  } else {
+    tabs.forEach((el, j)  => el.classList.toggle('active', i === j));
+    panes.forEach((el, j) => el.classList.toggle('active', i === j));
+  }
 }
+
+function startProjAutoRotate() {
+  projAutoTimer = setInterval(() => {
+    const next = (projCurrent + 1) % PROJ_TOTAL;
+    showProj(next, true);
+  }, PROJ_INTERVAL);
+}
+
+// Start auto-rotate once DOM is ready
+window.addEventListener('load', () => {
+  startProjAutoRotate();
+});
+
+// Pause auto-rotate when user hovers over project section
+document.addEventListener('DOMContentLoaded', () => {
+  const projSection = document.getElementById('projects');
+  if (projSection) {
+    projSection.addEventListener('mouseenter', () => clearInterval(projAutoTimer));
+    projSection.addEventListener('mouseleave', () => startProjAutoRotate());
+  }
+});
 
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
